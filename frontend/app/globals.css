@@ -1,0 +1,55 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --color-bg: 248 250 252;
+  --color-surface: 255 255 255;
+  --color-border: 226 232 240;
+
+  --color-text: 15 23 42;
+  --color-muted: 100 116 139;
+
+  --color-primary: 79 70 229;
+
+  --color-danger: 220 38 38;
+  --color-warning: 217 119 6;
+  --color-success: 5 150 105;
+
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: Sora, Inter, sans-serif;
+}
+
+
+.dark {
+  --color-bg: 15 23 42;
+  --color-surface: 30 41 59;
+  --color-border: 51 65 85;
+
+  --color-text: 241 245 249;
+  --color-muted: 148 163 184;
+
+  --color-primary: 129 140 248;
+
+  --color-danger: 248 113 113;
+  --color-warning: 251 191 36;
+  --color-success: 52 211 153;
+}
+
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
+}
+
+
+.font-display {
+  letter-spacing: -0.03em;
+}
