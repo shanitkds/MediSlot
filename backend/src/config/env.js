@@ -51,7 +51,7 @@ const env = {
   SMTP_SECURE: bool("SMTP_SECURE", false),
   SMTP_USER: process.env.SMTP_USER || "",
   SMTP_PASS: process.env.SMTP_PASS || "",
-  SMTP_FROM: process.env.SMTP_FROM || "SaaS Boilerplate <noreply@localhost>",
+  SMTP_FROM: process.env.SMTP_FROM || "MediSlot <noreply@localhost>",
   SUPERADMIN_EMAIL: process.env.SUPERADMIN_EMAIL || "admin@example.com",
   SUPERADMIN_PASSWORD: process.env.SUPERADMIN_PASSWORD || "ChangeMeNow!23",
   SUPERADMIN_NAME: process.env.SUPERADMIN_NAME || "Super Admin",

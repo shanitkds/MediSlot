@@ -6,7 +6,7 @@ const { hashPassword } = require("../utils/hash");
 async function seedSuperAdmin(superAdminRole) {
   await Settings.findOneAndUpdate(
     { key: "app" },
-    { $setOnInsert: { key: "app", name: "SaaS Boilerplate", supportEmail: env.SUPERADMIN_EMAIL } },
+    { $setOnInsert: { key: "app", name: "MediSlot", supportEmail: env.SUPERADMIN_EMAIL } },
     { upsert: true }
   );
 

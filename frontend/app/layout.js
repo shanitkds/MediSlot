@@ -9,8 +9,11 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-display" });
 
 export const metadata = {
-  title: appName,
-  description: "Production-ready SaaS boilerplate",
+  title: {
+    default: appName,
+    template: `%s | ${appName}`,
+  },
+  description: "MediSlot - Doctor Appointment & Medical Slot Booking Management System",
 };
 
 export default function RootLayout({ children }) {

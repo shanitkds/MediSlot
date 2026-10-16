@@ -2,6 +2,68 @@
 
 A full-stack clinical scheduling and appointment management platform featuring granular role-based access control (RBAC), atomic slot reservation, and real-time Socket.IO updates.
 
+Reusable production foundation for MediSlot:
+- `frontend/` — Next.js App Router (JavaScript, Tailwind)
+- `backend/` — Express REST API at `/api/v1` (JavaScript, MongoDB, Mongoose)
+
+The apps are independently deployable and can later become separate repositories. MongoDB is accessed only by Express.
+
+---
+
+## Quick Start
+
+### Copy environment files:
+```cmd
+copy backend\.env.example backend\.env
+copy frontend\.env.example frontend\.env.local
+```
+
+### Start MongoDB and MailHog (recommended):
+```bash
+docker compose up mongo mailhog -d
+```
+- **MailHog UI**: [http://localhost:8025](http://localhost:8025)
+
+### Install, seed, and run:
+
+**Backend:**
+```bash
+cd backend
+npm install
+npm run seed
+npm run dev
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Endpoints & Credentials:
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **API**: [http://localhost:5000](http://localhost:5000)
+- **Interactive Swagger Docs**: [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+- **Health**: [http://localhost:5000/health](http://localhost:5000/health)
+- **Default Super Admin (from `.env`)**: `admin@example.com` / `ChangeMeNow!23`
+
+*In development the Next.js app rewrites `/api/*` to `http://localhost:5000/api/*` so session cookies stay first-party.*
+
+### Documentation
+See [docs/](docs/README.md) for architecture, auth, API, and how to add a module.
+
+### Scripts
+
+| App | Command | Purpose |
+| :--- | :--- | :--- |
+| **backend** | `npm run dev` | Nodemon API on `:5000` |
+| **backend** | `npm run seed` | Permissions, roles, Super Admin |
+| **backend** | `npm test` | Jest + Supertest |
+| **frontend** | `npm run dev` | Next.js on `:3000` |
+| **frontend** | `npm test` | Jest + Testing Library |
+| **frontend** | `npm run test:e2e` | Playwright (apps must be running) |
+
 ---
 
 ## 1. Project Overview
@@ -12,6 +74,7 @@ MediSlot simplifies clinical operations by connecting healthcare providers, rece
 - **Dynamic Scheduling & Slot Generation**: Configurable session intervals, breaks, and auto-generated bookable slots.
 - **Atomic Booking Engine**: Concurrency-safe slot reservation to eliminate double bookings.
 - **Real-Time Live Updates**: Socket.IO integration for instant appointment and status updates across client dashboards.
+- **Interactive OpenAPI 3.0 / Swagger Explorer**: Full API documentation and live request testing available at `/api-docs` and `/api-docs.json`.
 
 > **Additional Technical Documentation**:
 > - [Engineering Decisions & Rationale](ENGINEERING_DECISIONS.md) — Architectural rationale, concurrency model, and security trade-offs.
@@ -570,6 +633,19 @@ MediSlot provides comprehensive, interactive Swagger UI documentation generated 
 - **Interactive Swagger UI**: [http://localhost:5000/api-docs](http://localhost:5000/api-docs) (or [http://localhost:5000/api/docs](http://localhost:5000/api/docs))
 - **OpenAPI 3.0 Specification JSON**: [http://localhost:5000/api-docs.json](http://localhost:5000/api-docs.json)
 
+#### Authenticating in Swagger UI
+MediSlot routes are secured with stateful session cookies or JWT tokens. You can authenticate directly within the Swagger UI:
+1. **Interactive Session Login (Recommended)**:
+   - Navigate to the **Auth** section in Swagger UI.
+   - Expand `POST /api/v1/auth/login` and click **Try it out**.
+   - Submit the Super Admin credentials (`admin@example.com` / `ChangeMeNow!23`).
+   - The browser automatically stores the HTTP-only `sid` session cookie. All subsequent requests in Swagger UI will now be authenticated.
+2. **Authorize Modal**:
+   - Click the green **Authorize** 🔓 button at the top right of the Swagger UI.
+   - Under `bearerAuth`, supply your JWT token (e.g., `eyJhbGciOi...`).
+   - Under `cookieAuth`, supply your session ID cookie `sid`.
+   - Click **Authorize** and then **Close**.
+
 #### Modular Swagger Architecture
 Swagger documentation is cleanly isolated into independent OpenAPI definition files within each respective module directory, aggregated centrally by `backend/src/config/swagger.js` and mounted in `backend/src/app.js`:
 
@@ -586,6 +662,11 @@ Swagger documentation is cleanly isolated into independent OpenAPI definition fi
 | **Slot** | `backend/src/modules/slot/slot.swagger.js` | Dynamic slot generation, regeneration, concurrency locks, queries |
 | **Users** | `backend/src/modules/users/user.swagger.js` | Staff management (Doctors & Receptionists), status & role updates |
 | **Profile** | `backend/src/modules/profile/profile.swagger.js` | Logged-in user profile view and preferences update |
+
+#### Importing OpenAPI Spec into Postman / Insomnia
+You can import the full API schema into your favorite API client:
+- **Raw Spec URL**: `http://localhost:5000/api-docs.json`
+- In Postman: Click **Import** > Paste `http://localhost:5000/api-docs.json` > Select **OpenAPI 3.0**.
 
 ---
 
@@ -726,7 +807,7 @@ docker compose up mongo mailhog -d
 cd backend
 npm run dev
 ```
-*API running on `http://localhost:5000` (Health check: `http://localhost:5000/health`)*
+*API running on `http://localhost:5000` (Health check: `http://localhost:5000/health` | Swagger UI: `http://localhost:5000/api-docs`)*
 
 **Terminal 2 — Frontend:**
 ```bash

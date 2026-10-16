@@ -1,8 +1,8 @@
 {
-  "name": "saas-backend",
+  "name": "medislot-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Express REST API for the SaaS boilerplate",
+  "description": "Express REST API for MediSlot Doctor Appointment & Slot Booking System",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",

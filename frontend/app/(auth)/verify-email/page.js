@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "Verify Email",
+  description: "Verify your email address for MediSlot",
+};
+
 export default function VerifyEmailPage() {
   return (
     <div>
