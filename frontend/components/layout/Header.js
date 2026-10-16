@@ -3,7 +3,6 @@
 import React from "react";
 import { FiMenu } from "react-icons/fi";
 import { Breadcrumbs } from "./Breadcrumbs";
-import { NotificationBell } from "./NotificationBell";
 import { UserMenu } from "./UserMenu";
 import { cn } from "@/lib/utils";
 
@@ -29,9 +28,8 @@ export function Header({ onMenuClick, className }) {
         <Breadcrumbs />
       </div>
 
-      {/* Right side: Notifications & User Menu */}
+      {/* Right side: User Menu */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        <NotificationBell />
         <UserMenu />
       </div>
     </header>

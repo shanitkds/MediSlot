@@ -1,6 +1,6 @@
 # Backend
 
-Express API for the SaaS boilerplate.
+Express API for the MediSlot Doctor Appointment & Medical Slot Booking Management System.
 
 ```bash
 copy .env.example .env

@@ -47,8 +47,24 @@ async function lastSuperAdminGuard(userId) {
 }
 
 async function list(query = {}) {
+  let roleIdFilter;
+  if (query.role) {
+    const roles = await Role.find({
+      $or: [
+        { slug: query.role.toLowerCase() },
+        { name: { $regex: new RegExp(`^${query.role}$`, "i") } },
+        ...(query.role === "super_admin" ? [{ isSuperAdmin: true }] : []),
+      ],
+      deletedAt: null,
+    }).select("_id");
+    roleIdFilter = roles.map((r) => r._id);
+  }
+
   return paginate(User, query, {
-    baseFilter: { isArchive: { $ne: true } },
+    baseFilter: {
+      isArchive: { $ne: true },
+      ...(roleIdFilter ? { roleIds: { $in: roleIdFilter } } : {}),
+    },
     booleanFields: ["isArchive"],
     exactFields: { status: "status", roleId: "roleIds" },
     searchFields: ["name", "email"],
@@ -143,6 +159,23 @@ async function createReceptionist(payload, actor, req) {
 async function update(id, payload, actor, req) {
   const user = await User.findOne({ _id: id });
   if (!user) throw ApiError.notFound("User not found");
+
+  if (payload.role && !payload.roleIds) {
+    let roleDoc = await Role.findOne({
+      $or: [
+        { slug: payload.role.toLowerCase() },
+        { name: { $regex: new RegExp(`^${payload.role}$`, "i") } },
+        ...(payload.role === "super_admin" ? [{ isSuperAdmin: true }] : []),
+      ],
+      deletedAt: null,
+    });
+    if (!roleDoc && ["doctor", "receptionist", "admin"].includes(payload.role)) {
+      roleDoc = await getOrCreateRole(payload.role, payload.role.charAt(0).toUpperCase() + payload.role.slice(1));
+    }
+    if (roleDoc) {
+      payload.roleIds = [roleDoc._id];
+    }
+  }
 
   if (payload.roleIds) {
     const roles = await ensureRolesExist(payload.roleIds);

@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useUser } from "@/hooks/queries/useUserQuery";
 import { formatDate } from "@/lib/utils";
+import { getUserRoleInfo, getRoleBadgeVariant } from "@/components/users/UsersView";
 import { FiUser, FiMail, FiShield, FiEdit, FiClock } from "react-icons/fi";
 
 export function UserDetailView({ params }) {
@@ -24,6 +25,7 @@ export function UserDetailView({ params }) {
 
   const { data: userData, isLoading, error, refetch } = useUser(id);
   const user = userData?.data?.user || userData?.data || null;
+  const roleInfo = getUserRoleInfo(user);
 
   return (
     <PermissionGate
@@ -52,8 +54,8 @@ export function UserDetailView({ params }) {
                     <h2 className="font-display text-xl font-bold text-text">
                       {user.name}
                     </h2>
-                    <Badge variant="primary" size="sm" className="capitalize">
-                      {user.role ? user.role.replace("_", " ") : "Member"}
+                    <Badge variant={getRoleBadgeVariant(roleInfo.slug)} size="sm" className="capitalize">
+                      {roleInfo.label}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted mt-1">{user.email}</p>

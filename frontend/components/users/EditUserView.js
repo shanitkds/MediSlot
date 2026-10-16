@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { useUser, useUpdateUser, useUpdateUserStatus } from "@/hooks/queries/useUserQuery";
 import { useToast } from "@/contexts/ToastProvider";
+import { getUserRoleInfo } from "@/components/users/UsersView";
 import { FiSave } from "react-icons/fi";
 
 export function EditUserView({ params }) {
@@ -30,14 +31,15 @@ export function EditUserView({ params }) {
   const statusMutation = useUpdateUserStatus();
 
   const [name, setName] = useState("");
-  const [role, setRole] = useState("member");
+  const [role, setRole] = useState("doctor");
   const [status, setStatus] = useState("active");
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (user) {
       setName(user.name || "");
-      setRole(user.role || "member");
+      const roleInfo = getUserRoleInfo(user);
+      setRole(roleInfo.slug || "doctor");
       setStatus(user.status || (user.isActive ? "active" : "disabled"));
     }
   }, [user]);

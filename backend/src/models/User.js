@@ -34,6 +34,38 @@ userSchema.virtual("doctor", {
   justOne: true,
 });
 
+userSchema.virtual("roles").get(function () {
+  if (Array.isArray(this.roleIds) && this.roleIds.length > 0) {
+    return this.roleIds;
+  }
+  return [];
+});
+
+userSchema.virtual("role").get(function () {
+  if (Array.isArray(this.roleIds) && this.roleIds.length > 0) {
+    const isSuper = this.roleIds.some((r) => r && (r.isSuperAdmin || r.slug === "super_admin"));
+    if (isSuper) return "super_admin";
+    const first = this.roleIds[0];
+    if (first && typeof first === "object" && (first.slug || first.name)) {
+      return (first.slug || first.name).toLowerCase().replace(/\s+/g, "_");
+    }
+    if (typeof first === "string") {
+      return first;
+    }
+  }
+  if (this.doctor) {
+    return "doctor";
+  }
+  return "member";
+});
+
+userSchema.virtual("isSuperAdmin").get(function () {
+  if (Array.isArray(this.roleIds) && this.roleIds.length > 0) {
+    return this.roleIds.some((r) => r && (r.isSuperAdmin || r.slug === "super_admin"));
+  }
+  return false;
+});
+
 userSchema.index(
   { email: 1 },
   { unique: true, partialFilterExpression: { isArchive: false } }

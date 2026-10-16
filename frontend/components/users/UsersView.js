@@ -30,13 +30,64 @@ import {
   FiShield,
 } from "react-icons/fi";
 
-function getRoleBadgeVariant(role) {
+export function getUserRoleInfo(user) {
+  if (!user) return { slug: "member", label: "Member" };
+
+  // 1. Direct role string
+  if (typeof user.role === "string" && user.role.trim() && user.role.toLowerCase() !== "member") {
+    const slug = user.role.toLowerCase().replace(/[-\s]+/g, "_");
+    const label = user.role
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    return { slug, label };
+  }
+
+  // 2. Check roleIds or roles array
+  const roleList = Array.isArray(user.roleIds) && user.roleIds.length > 0
+    ? user.roleIds
+    : (Array.isArray(user.roles) ? user.roles : []);
+
+  if (roleList.length > 0) {
+    const isSuper = roleList.some(
+      (r) => r && (r.isSuperAdmin || r.slug === "super_admin" || r.name?.toLowerCase() === "super admin")
+    );
+    if (isSuper) {
+      return { slug: "super_admin", label: "Super Admin" };
+    }
+
+    const first = roleList[0];
+    if (first && typeof first === "object") {
+      const slug = (first.slug || first.name || "").toLowerCase().replace(/[-\s]+/g, "_");
+      const label = first.name || slug.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      if (label) return { slug, label };
+    } else if (typeof first === "string" && first.trim()) {
+      const slug = first.toLowerCase().replace(/[-\s]+/g, "_");
+      const label = first.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      return { slug, label };
+    }
+  }
+
+  // 3. Fallback: check if doctor profile attached
+  if (user.doctor) {
+    return { slug: "doctor", label: "Doctor" };
+  }
+
+  if (typeof user.role === "string" && user.role.trim()) {
+    const slug = user.role.toLowerCase().replace(/[-\s]+/g, "_");
+    const label = user.role.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    return { slug, label };
+  }
+
+  return { slug: "member", label: "Member" };
+}
+
+export function getRoleBadgeVariant(role) {
   switch (role?.toLowerCase()) {
     case "super_admin":
     case "super admin":
       return "primary";
     case "doctor":
-      return "info";
+      return "primary";
     case "receptionist":
       return "success";
     case "admin":
@@ -127,11 +178,14 @@ export function UsersView() {
       key: "role",
       label: "Role",
       className: "w-36",
-      render: (row) => (
-        <Badge variant={getRoleBadgeVariant(row.role)} size="sm" className="capitalize">
-          {row.role ? row.role.replace("_", " ") : "Member"}
-        </Badge>
-      ),
+      render: (row) => {
+        const { slug, label } = getUserRoleInfo(row);
+        return (
+          <Badge variant={getRoleBadgeVariant(slug)} size="sm" className="capitalize">
+            {label}
+          </Badge>
+        );
+      },
     },
     {
       key: "status",

@@ -1,6 +1,6 @@
 # Frontend
 
-Next.js App Router UI for the SaaS boilerplate.
+Next.js App Router UI for the MediSlot Doctor Appointment & Medical Slot Booking Management System.
 
 ```bash
 copy .env.example .env.local
